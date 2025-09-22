@@ -1,0 +1,31 @@
+[
+  {
+    "name": "click_nth_job_link",
+    "selector": "[id=\"main\"] ul > li:nth-child(2) strong",
+    "action": "click",
+    "description": "click 2nd job link",
+    "created": "2025-09-22T18:56:20.335184",
+    "modified": "2025-09-22T18:56:20.335193",
+    "usage_count": 0
+  },
+  {
+    "name": "input_job_search",
+    "selector": ".jobs-search-box__text-input",
+    "action": "input",
+    "description": "input software engineer in job search field",
+    "created": "2025-09-22T18:57:27.022636",
+    "modified": "2025-09-22T19:05:27.493043",
+    "usage_count": 0,
+    "text": "software engineer"
+  },
+  {
+    "name": "press_enter_in_job_search_field",
+    "selector": ".jobs-search-box__text-input",
+    "action": "send_key",
+    "description": "press enter key in job search field",
+    "created": "2025-09-22T18:58:17.439960",
+    "modified": "2025-09-22T19:05:35.414159",
+    "usage_count": 0,
+    "key": "enter"
+  }
+]

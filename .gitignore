@@ -1,0 +1,12 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+llmcp_config.json
+uv.lock
+
+# Virtual environments
+.venv
