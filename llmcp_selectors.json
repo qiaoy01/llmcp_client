@@ -3,9 +3,9 @@
     "name": "click_nth_job_link",
     "selector": "[id=\"main\"] ul > li:nth-child(2) strong",
     "action": "click",
-    "description": "click 2nd job link",
+    "description": "click 2nd job link.",
     "created": "2025-09-22T18:56:20.335184",
-    "modified": "2025-09-22T18:56:20.335193",
+    "modified": "2025-09-22T22:25:40.844259",
     "usage_count": 0
   },
   {
