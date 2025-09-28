@@ -265,7 +265,7 @@ Contributions are welcome! Key areas for enhancement:
 
 ## License
 
-This project is open source. Please check the license file for specific terms and conditions.
+MIT
 
 ---
 
