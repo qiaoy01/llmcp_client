@@ -3,24 +3,30 @@ import websockets
 import json
 import time
 import threading
+from typing import Any, Callable
 
 class LLMCPWebSocketServer:
     """WebSocket Server for Chrome Extension Communication"""
     
-    def __init__(self, debugger, host='localhost', port=11808):
-        self.debugger = debugger
+    def __init__(self, 
+                 log_message: Callable[[str],None]=None, 
+                 handle_extension_response: Callable[[Any], None]=None,
+                 host='localhost', port=11808):
         self.host = host
         self.port = port
         self.clients = set()
         self.server = None
         self.loop = None
         self.server_thread = None
+        self.log_message = log_message
+        self.handle_extension_response = handle_extension_response
+        self.request = {}
         
     async def register_client(self, websocket):
         """Register new WebSocket connection"""
         self.clients.add(websocket)
         client_addr = getattr(websocket, 'remote_address', 'unknown')
-        self.debugger.log_message(f"[WebSocket] Client connected from {client_addr}")
+        self.log_message(f"[WebSocket] Client connected from {client_addr}")
         
         try:
             await websocket.send(json.dumps({
@@ -29,21 +35,21 @@ class LLMCPWebSocketServer:
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
             }))
         except Exception as e:
-            self.debugger.log_message(f"[WebSocket] Failed to send welcome: {e}")
+            self.log_message(f"[WebSocket] Failed to send welcome: {e}")
         
     async def unregister_client(self, websocket):
         """Unregister WebSocket connection"""
         self.clients.discard(websocket)
-        self.debugger.log_message("[WebSocket] Client disconnected")
+        self.log_message("[WebSocket] Client disconnected")
         
     async def handle_message(self, websocket, data):
         """Handle received messages"""
         message_type = data.get('type', 'unknown')
-        self.debugger.log_message(f"[WebSocket] Received: {message_type}")
+        self.log_message(f"[WebSocket] Received: {message_type}")
         
         try:
             if message_type == 'dom_operation_result':
-                self.debugger.handle_extension_response(data)
+                self.handle_extension_response(data)
             elif message_type == 'heartbeat':
                 await websocket.send(json.dumps({
                     "type": "heartbeat_response",
@@ -58,7 +64,7 @@ class LLMCPWebSocketServer:
                 }))
             elif message_type in ['tab_updated', 'tab_activated']:
                 url = data.get('url', 'Unknown URL')
-                self.debugger.log_message(f"[WebSocket] {message_type.replace('_', ' ').title()}: {url}")
+                self.log_message(f"[WebSocket] {message_type.replace('_', ' ').title()}: {url}")
             
             # Send confirmation response
             await websocket.send(json.dumps({
@@ -68,7 +74,7 @@ class LLMCPWebSocketServer:
             }))
             
         except Exception as e:
-            self.debugger.log_message(f"[WebSocket] Error handling message: {e}")
+            self.log_message(f"[WebSocket] Error handling message: {e}")
             
     async def broadcast_command(self, command):
         """Broadcast command to all connected clients"""
@@ -109,12 +115,12 @@ class LLMCPWebSocketServer:
                                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
                             }))
                         except Exception as e:
-                            self.debugger.log_message(f"[WebSocket] Message error: {e}")
+                            self.log_message(f"[WebSocket] Message error: {e}")
                             
                 except websockets.exceptions.ConnectionClosed:
-                    self.debugger.log_message("[WebSocket] Connection closed")
+                    self.log_message("[WebSocket] Connection closed")
                 except Exception as e:
-                    self.debugger.log_message(f"[WebSocket] Connection error: {e}")
+                    self.log_message(f"[WebSocket] Connection error: {e}")
                 finally:
                     await self.unregister_client(websocket)
             
@@ -128,13 +134,13 @@ class LLMCPWebSocketServer:
                         ping_timeout=10
                     )
                     
-                    self.debugger.log_message(f"[WebSocket] Server started on ws://{self.host}:{self.port}")
+                    self.log_message(f"[WebSocket] Server started on ws://{self.host}:{self.port}")
                     
                     # Wait for server to close
                     await self.server.wait_closed()
                     
                 except Exception as e:
-                    self.debugger.log_message(f"[WebSocket] Server error: {e}")
+                    self.log_message(f"[WebSocket] Server error: {e}")
                     
             try:
                 # Create event loop
@@ -145,7 +151,7 @@ class LLMCPWebSocketServer:
                 self.loop.run_until_complete(start_websocket_server())
                 
             except Exception as e:
-                self.debugger.log_message(f"[WebSocket] Loop error: {e}")
+                self.log_message(f"[WebSocket] Loop error: {e}")
             finally:
                 if self.loop and not self.loop.is_closed():
                     self.loop.close()
@@ -158,7 +164,7 @@ class LLMCPWebSocketServer:
             return True
             
         except Exception as e:
-            self.debugger.log_message(f"[WebSocket] Failed to start thread: {e}")
+            self.log_message(f"[WebSocket] Failed to start thread: {e}")
             return False
             
     def stop_server(self):

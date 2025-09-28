@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox, filedialog
 from datetime import datetime
 
-class UIWithLogTab:
+class UIWithLogTab():
     def setup_log_tab(self, notebook):
         """Setup server log tab"""
         log_frame = ttk.Frame(notebook)

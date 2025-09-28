@@ -63,16 +63,6 @@ class UIWithDebuggerTab:
         
         ttk.Button(row3, text="Send Key", command=self.send_key).pack(side='left', padx=2)
         
-        # Row 4: Screenshot
-        row4 = ttk.Frame(commands_frame)
-        row4.pack(fill='x', pady=2)
-        
-        ttk.Label(row4, text="Bias (x,y,w,h):").pack(side='left')
-        self.bias_entry = ttk.Entry(row4, width=20)
-        self.bias_entry.pack(side='left', padx=5)
-        
-        ttk.Button(row4, text="Screenshot Element", command=self.screenshot_element).pack(side='left', padx=2)
-        
         # Response display
         response_frame = ttk.LabelFrame(debug_frame, text="Last Response")
         response_frame.pack(fill='both', expand=True, padx=5, pady=5)
